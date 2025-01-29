@@ -7,14 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
-    use HasFactory;
-
-    protected $table = 'tasks'; // テーブル名
-    protected $primaryKey = 'task_id'; // タスクIDをプライマリキーとして指定
-
+    protected $table = 'tasks';
     protected $fillable = [
-        'user_id',
         'user_name',
+        'task_id',
         'task_name',
         'description',
         'importance',
@@ -24,6 +20,7 @@ class Task extends Model
         'manual_priority',
         'status',
     ];
+
 
     public function user()
     {

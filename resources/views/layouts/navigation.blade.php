@@ -22,7 +22,11 @@
                             @else
                                 <div>guest</div>
                             @endauth
-                            <div>{{ Auth::user()->name }}</div>
+                            @if (Auth::check())
+                                <div>{{ Auth::user()->name }}</div>
+                            @else
+                                <div>Guest</div>
+                            @endif
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -42,7 +46,7 @@
                             <x-dropdown-link :href="route('tasks.create')">
                                 {{ __('Create Task') }}
                             </x-dropdown-link>
-                            <form method="Task" action="{{ route('logout') }}">
+                            <form method="Post" action="{{ route('logout') }}">
                                 @csrf
                                 <x-dropdown-link :href="route('logout')"
                                         onclick="event.preventDefault();
@@ -99,7 +103,7 @@
                     <x-responsive-nav-link :href="route('tasks.create')">
                         {{ __('Create Task') }}
                     </x-responsive-nav-link>
-                    <form method="Task" action="{{ route('logout') }}">
+                    <form method="Post" action="{{ route('logout') }}">
                         @csrf
                         <x-responsive-nav-link :href="route('logout')"
                                 onclick="event.preventDefault();
