@@ -8,16 +8,15 @@ use Illuminate\Http\Request;
 class TaskController extends Controller
 {
 
-    // 一覧表示
-    public function index()
+    public function show($task)
     {
-        $tasks = Task::orderBy('priority', 'desc')->get(); 
-        return view('tasks.index', ['tasks' => $tasks]);
+        $tasks = Task::orderBy('priority', 'desc')->get();
+        return view('tasks.index', ['task' => $task]);
     }
 
-    public function reorder()
+    public function index()
     {
-        $tasks = Task::all(); 
+        $tasks = Task::all();
         return view('tasks.reorder', ['tasks' => $tasks]);
     }
     // 新規作成フォーム
@@ -29,76 +28,64 @@ class TaskController extends Controller
     // 新規タスクの保存
     public function store(Request $request)
     {
-        // バリデーション例
+        
         $validated = $request->validate([
             'task_name' => 'required|string|max:255',
-            // 他のフィールドも必要に応じて
+            'importance' => 'required|integer|min:1|max:5',
+            'deadline' => 'required|date_format:H:i',
+            'estimated_time' => 'required|date_format:H:i'
         ]);
+        $task = new Task();
 
-        // 新規保存
-        $task = Task::create([
-            'task_id' => uniqid(),  
-            'task_name' => $validated['task_name'],
-            'importance' => $request->importance,
-            'deadline' => $request->deadline,
-            'estimated_time' => $request->estimated_time,
-        ]);
+        $task->task_name = $request->task_name;
+        $task->importance = $request->importance;
+        $task->deadline = $request->deadline;
+        $task->estimated_time = $request->estimated_time;
 
+        // インスタンスに値を設定して保存
+        $task->save();
 
-        
-        return redirect()->route('tasks.index');
+        // 登録したらindexに戻る
+        return redirect(route('tasks.index'));
     }
 
-    // 単一タスク表示
-    public function show(Task $task)
-    {
-        return view('tasks.show', compact('task'));
-    }
 
-    // 編集フォーム表示
-    public function edit(Task $task)
+    public function edit($id)
     {
-        return view('tasks.edit', compact('task'));
+        $task = Task::find($id);
+        return view('tasks.edit', ['task' => $task]);
     }
 
     // タスク更新
-    public function update(Request $request, Task $task)
+    public function update(Request $request, $id)
     {
-        // バリデーションなど
-        $validated = $request->validate([
-            'task_name' => 'required|string|max:255',
-            // ...
-        ]);
-
-        $task->update($validated);
-
-        return redirect()->route('tasks.index');
+        // ここはidで探して持ってくる以外はstoreと同じ
+        $task = Task::find($id);
+        // 値の用意
+        $task->title = $request->title;
+        $task->body = $request->body;
+        // 保存
+        $task->save();
+        // 登録したらindexに戻る
+        return redirect(route('tasks.index'));
     }
-
     // タスク削除
-    public function destroy(Task $task)
+    public function destroy($task)
     {
+        $task = Task::find($task);
         $task->delete();
-        return redirect()->route('tasks.index');
+        return redirect(route('tasks.index'));
     }
-    public function top()
-    {
-        $topTask = Task::orderBy('priority', 'desc')->first();
-        // JSON返却してもいいし、そのままビューに渡しても良い
-        return response()->json($topTask);
-    }
+
 
     // 完了ボタン
     public function complete(Task $task)
     {
         $task->update(['status' => '完了']);
         // 次の最優先タスクを返す or リダイレクトなど
-        $nextTop = Task::where('status', '!=', '完了')
+        $nextindex= Task::where('status', '!=', '完了')
             ->orderBy('priority', 'desc')
             ->first();
-        return response()->json($nextTop);
+        return response()->json($nextindex);
     }
-
-
 }
-

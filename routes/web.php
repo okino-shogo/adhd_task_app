@@ -22,7 +22,7 @@ Route::get('/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.re
 Route::resource('tasks', TaskController::class);
 
 
-Route::get('/tasks/top', [TaskController::class, 'top'])->name('tasks.top');
+Route::get('/tasks/tindexop', [TaskController::class, 'tindex'])->name('tasks.index');
 
 
 Route::post('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
