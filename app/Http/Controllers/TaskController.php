@@ -85,7 +85,7 @@ class TaskController extends Controller
             ->orderBy('priority', 'asc')
             ->first();
         if ($nextTask) {
-        return redirect()->route('tasks.index');
+            return redirect()->route('tasks.index');
         }
         // 次の優先度のタスクを取得
         return redirect()->route('tasks.index')->with('message', 'すべてのタスクが完了しました。');
@@ -96,5 +96,17 @@ class TaskController extends Controller
         // タスクを並び替える処理をここに追加
         $tasks = Task::orderBy('priority', 'asc')->get();
         return view('tasks.reorder', compact('tasks'));
+    }
+    public function updateOrder(Request $request)
+    {
+        // JSONデータを取得
+        $priorities = $request->input('order');
+
+        // 各タスクの `priority` を更新
+        foreach ($priorities as $taskData) {
+            Task::where('id', $taskData['id'])->update(['priority' => (int) $taskData['priority']]);
+        }
+
+        return response()->json(['message' => '優先順位が更新されました']);
     }
 }

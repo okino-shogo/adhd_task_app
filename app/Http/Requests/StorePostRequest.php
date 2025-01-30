@@ -23,9 +23,9 @@ class StorePostRequest extends FormRequest
     {
         return [
             'task_name' => 'required|string|max:50',
-            'importance' => 'required|integer|min:1|max:5',
-            'deadline' => 'required|date_format:H:i',
-            'estimated_time' => 'required|date_format:H:i',
+            'importance' => 'nullable|integer|min:1|max:5',
+            'deadline' => 'nullable|date_format:H:i',
+            'estimated_time' => 'nullable|date_format:H:i',
         ];
     }
 }

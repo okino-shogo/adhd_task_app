@@ -21,6 +21,7 @@ Route::get('/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.re
 
 Route::resource('tasks', TaskController::class);
 
+Route::post('/tasks/updateOrder', [TaskController::class, 'updateOrder'])->name('tasks.updateOrder');
 
 Route::get('/tasks/top', [TaskController::class, 'top'])->name('tasks.top');
 
