@@ -16,10 +16,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // ユーザーID（外部キー）
             $table->string('user_name'); // ユーザー名
             $table->string('task_name'); // タスク名
-            $table->text('description')->nullable(); // タスク詳細（任意）
-            $table->integer('importance')->nullable(); // 重要度（1～5などのスコア、任意）
+            $table->text('description')->nullable(); // タスク詳細
+            $table->integer('importance')->nullable(); // 重要度（1～5のスコア）
             $table->time('deadline')->nullable(); // 締切（日時）
-            $table->unsignedInteger('estimated_time')->nullable(); // タスクにかかる時間（分単位、正の数）
+            $table->unsignedInteger('estimated_time')->nullable(); // タスクにかかる時間
             $table->integer('priority')->nullable(); // AI計算後の優先順位
             $table->integer('manual_priority')->nullable(); // 手動で設定した優先順位
             $table->string('status')->default('未完了'); // タスクの状態（未完了/完了など）
