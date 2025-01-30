@@ -10,7 +10,7 @@ class TaskController extends Controller
 
     public function index()
     {
-        $task = Task::orderBy('priority', 'desc')->get(); 
+        $task = Task::orderBy('priority', 'desc')->get();
         return view('tasks.index', ['task' => $task]);
     }
 
@@ -20,15 +20,15 @@ class TaskController extends Controller
         return view('tasks.reorder', ['tasks' => $tasks]);
     }
     // 新規作成フォーム
+
     public function create()
     {
-        //
+        return view('memos.create');
     }
-
     // 新規タスクの保存
     public function store(Request $request)
     {
-        
+
         $validated = $request->validate([
             'task_name' => 'required|string|max:255',
             'importance' => 'required|integer|min:1|max:5',
@@ -44,9 +44,8 @@ class TaskController extends Controller
 
         // インスタンスに値を設定して保存
         $task->save();
-
         // 登録したらindexに戻る
-        return redirect(route('tasks.index'));
+        return redirect()->route('tasks.index');
     }
 
 
@@ -83,12 +82,12 @@ class TaskController extends Controller
     {
         $task->update(['status' => '完了']);
         // 次の最優先タスクを返す or リダイレクトなど
-        $nextindex= Task::where('status', '!=', '完了')
+        $nextindex = Task::where('status', '!=', '完了')
             ->orderBy('priority', 'desc')
             ->first();
         return response()->json($nextindex);
     }
-        public function reorder()
+    public function reorder()
     {
         // タスクを並び替える処理をここに追加
         $tasks = Task::orderBy('priority', 'desc')->get();

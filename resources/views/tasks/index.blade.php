@@ -60,22 +60,22 @@
                         @csrf
                         <div>
                             <label for="task_name">タスク入力</label><br>
-                            <input type="text" name="task_name" id="task_name">
+                            <input type="text" name="task_name" id="task_name" required>
                         </div>
 
-                        <div class="input-item">
+                        <div>
                             <label for="deadline">締め切り</label><br>
-                            <input type="time" name="deadline" id="deadline">
+                            <input type="time" name="deadline" id="deadline" required>
                         </div>
 
                         <div>
                             <label for="importance">重要度</label><br>
-                            <input type="number" name="importance" id="importance" min="1" max="5">
+                            <input type="number" name="importance" id="importance" min="1" max="5" required>
                         </div>
 
                         <div>
                             <label for="estimated_time">かかる時間</label><br>
-                            <input type="time" name="estimated_time_hours" id="estimated_time">
+                            <input type="time" name="estimated_time" id="estimated_time" required>
                         </div>
 
                         <input type="submit" value="追加">
