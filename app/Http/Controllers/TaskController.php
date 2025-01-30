@@ -72,7 +72,7 @@ class TaskController extends Controller
     {
         $task = Task::find($task);
         $task->delete();
-        return redirect(route('tasks.index'));
+        return redirect(route('tasks.reorder'));
     }
 
 
@@ -94,7 +94,7 @@ class TaskController extends Controller
     public function reorder()
     {
         // タスクを並び替える処理をここに追加
-        $tasks = Task::orderBy('priority', 'desc')->get();
+        $tasks = Task::orderBy('priority', 'asc')->get();
         return view('tasks.reorder', compact('tasks'));
     }
 }

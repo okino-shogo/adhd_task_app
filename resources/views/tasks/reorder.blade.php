@@ -25,14 +25,15 @@
                 <ul id="task-list" class="space-y-2">
                     @foreach ($tasks as $task)
                         <li class="flex items-center bg-gray-300 p-2 rounded">
-                            <!-- 優先順位（番号） -->
+                            <!-- 優先順位 (番号) -->
                             <div class="w-8 text-center font-bold">{{ $loop->iteration }}</div>
 
-                            <!-- タスク名 -->
-                            <div class="flex-grow p-2 bg-gray-50 rounded text-lg font-semibold">
-                                <p>{{ $task->task_name }}</p>
+                            <!-- タスク名（完了したら斜線を入れる） -->
+                            <div
+                                class="flex-grow bg-gray-50 p-2 rounded text-lg font-semibold
+                                    @if ($task->status === '完了') line-through text-gray-500 @endif">
+                                        <p>{{ $task->task_name }}</p>
                             </div>
-
 
                             <!-- 削除ボタン -->
                             <form action="{{ route('tasks.destroy', $task->id) }}" method="POST">
@@ -45,17 +46,8 @@
                             <button class="bg-gray-400 text-black px-2 py-1 rounded ml-2 cursor-move">順番変える</button>
                         </li>
                     @endforeach
+
                 </ul>
-
-                <!-- 追加ボタン -->
-                <div class="mt-4">
-                    <button class="w-full bg-gray-400 text-black py-2 rounded">+</button>
-                </div>
-
-                <!-- 更新ボタン -->
-                <div class="mt-4 text-center">
-                    <button id="update-order" class="bg-gray-600 text-white px-4 py-2 rounded">更新</button>
-                </div>
             </div>
         </div>
 
