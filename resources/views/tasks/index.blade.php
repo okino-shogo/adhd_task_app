@@ -53,7 +53,18 @@
                     <button style="padding: 10px 20px;">完了</button>
                 </div>
 
-
+                @if ($errors->any())
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-2" role="alert">
+                        <p>
+                            <b>{{ count($errors) }}件のエラーがあります。</b>
+                        </p>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <!-- 画面下の「タスク入力」「締め切り」「重要度」「かかる時間」「追加」ボタン -->
                 <div>
                     <form action="{{ route('tasks.store') }}" method="post">

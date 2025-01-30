@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
-use Illuminate\Http\Request;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 
 class TaskController extends Controller
 {
@@ -26,17 +27,11 @@ class TaskController extends Controller
         return view('memos.create');
     }
     // 新規タスクの保存
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
+        $task = new Task($request->all());
 
-        $validated = $request->validate([
-            'task_name' => 'required|string|max:255',
-            'importance' => 'required|integer|min:1|max:5',
-            'deadline' => 'required|date_format:H:i',
-            'estimated_time' => 'required|date_format:H:i'
-        ]);
-        $task = new Task();
-
+        $task->user_id = $request->user()->id;
         $task->task_name = $request->task_name;
         $task->importance = $request->importance;
         $task->deadline = $request->deadline;
@@ -56,7 +51,7 @@ class TaskController extends Controller
     }
 
     // タスク更新
-    public function update(Request $request, $id)
+    public function update(UpdatePostRequest $request,string $id)
     {
         // ここはidで探して持ってくる以外はstoreと同じ
         $task = Task::find($id);
