@@ -10,6 +10,12 @@
 
         <title>ホーム</title>
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        <style>
+            /* 最優先タスクのデザイン */
+            .top-task {
+                font-size: 80px;
+            }
+        </style>
     </head>
 
     <body>
@@ -19,7 +25,9 @@
 
             <!-- 左上：優先順位アプリボタン -->
             <div>
-                <p>yaa</p>
+                <a href="{{ route('tasks.index') }}">
+                    優先順位アプリ
+                </a>
             </div>
 
             <!-- 右上の締め切りボタン -->

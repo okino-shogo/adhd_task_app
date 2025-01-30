@@ -8,13 +8,13 @@ use Illuminate\Http\Request;
 class TaskController extends Controller
 {
 
-    public function show($task)
+    public function index()
     {
-        $tasks = Task::orderBy('priority', 'desc')->get();
+        $task = Task::orderBy('priority', 'desc')->get(); 
         return view('tasks.index', ['task' => $task]);
     }
 
-    public function index()
+    public function show()
     {
         $tasks = Task::all();
         return view('tasks.reorder', ['tasks' => $tasks]);
@@ -87,5 +87,11 @@ class TaskController extends Controller
             ->orderBy('priority', 'desc')
             ->first();
         return response()->json($nextindex);
+    }
+        public function reorder()
+    {
+        // タスクを並び替える処理をここに追加
+        $tasks = Task::orderBy('priority', 'desc')->get();
+        return view('tasks.reorder', compact('tasks'));
     }
 }

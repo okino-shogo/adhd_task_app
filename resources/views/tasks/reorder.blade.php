@@ -10,7 +10,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div>
+<div class="container mx-auto p-4">
     <!-- 戻るボタン -->
     <div class="mb-4">
         <a href="{{ route('tasks.index') }}" class="bg-gray-300 text-black px-4 py-2 rounded">戻る</a>
