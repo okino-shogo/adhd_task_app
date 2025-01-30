@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
 
     public function index()
     {
-        $task = Task::orderBy('priority', 'desc')->get();
+        $task = Task::where('status', '未完了')
+            ->orderBy('priority', 'asc')
+            ->first();
         return view('tasks.index', ['task' => $task]);
     }
 
@@ -40,7 +43,8 @@ class TaskController extends Controller
         // インスタンスに値を設定して保存
         $task->save();
         // 登録したらindexに戻る
-        return redirect()->route('tasks.index');
+        return redirect()->route('tasks.index')
+            ->with('notice', 'タスクを追加しました');
     }
 
 
@@ -51,7 +55,7 @@ class TaskController extends Controller
     }
 
     // タスク更新
-    public function update(UpdatePostRequest $request,string $id)
+    public function update(UpdatePostRequest $request, string $id)
     {
         // ここはidで探して持ってくる以外はstoreと同じ
         $task = Task::find($id);
@@ -75,13 +79,18 @@ class TaskController extends Controller
     // 完了ボタン
     public function complete(Task $task)
     {
+        // タスクのステータスを「完了」に更新
         $task->update(['status' => '完了']);
-        // 次の最優先タスクを返す or リダイレクトなど
-        $nextindex = Task::where('status', '!=', '完了')
-            ->orderBy('priority', 'desc')
+        $nextTask = Task::where('status', '未完了')
+            ->orderBy('priority', 'asc')
             ->first();
-        return response()->json($nextindex);
+        if ($nextTask) {
+        return redirect()->route('tasks.index');
+        }
+        // 次の優先度のタスクを取得
+        return redirect()->route('tasks.index')->with('message', 'すべてのタスクが完了しました。');
     }
+
     public function reorder()
     {
         // タスクを並び替える処理をここに追加

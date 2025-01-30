@@ -43,55 +43,63 @@
 
             <!-- 中央の「最優先タスクを表示」 -->
 
-            <div class="top-task-container">
-                <div class="top-task">
-                    最優先タスクを表示
-                </div>
+            @if (session('message'))
+                <p>{{ session('message') }}</p>
+            @endif
 
-                <!-- 完了ボタン -->
-                <div style="margin: 20px 0;">
-                    <button style="padding: 10px 20px;">完了</button>
-                </div>
-
-                @if ($errors->any())
-                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-2" role="alert">
-                        <p>
-                            <b>{{ count($errors) }}件のエラーがあります。</b>
-                        </p>
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
+            @if ($task)
+                <div class="top-task-container">
+                    <div class="top-task">
+                        <p>{{ $task->task_name }}</p>
                     </div>
-                @endif
-                <!-- 画面下の「タスク入力」「締め切り」「重要度」「かかる時間」「追加」ボタン -->
-                <div>
-                    <form action="{{ route('tasks.store') }}" method="post">
+                    <form method="POST" action="{{ route('tasks.complete', $task->id) }}">
                         @csrf
-                        <div>
-                            <label for="task_name">タスク入力</label><br>
-                            <input type="text" name="task_name" id="task_name" required>
-                        </div>
-
-                        <div>
-                            <label for="deadline">締め切り</label><br>
-                            <input type="time" name="deadline" id="deadline" required>
-                        </div>
-
-                        <div>
-                            <label for="importance">重要度</label><br>
-                            <input type="number" name="importance" id="importance" min="1" max="5" required>
-                        </div>
-
-                        <div>
-                            <label for="estimated_time">かかる時間</label><br>
-                            <input type="time" name="estimated_time" id="estimated_time" required>
-                        </div>
-
-                        <input type="submit" value="追加">
+                        <button type="submit" style="padding: 10px 20px;">完了</button>
                     </form>
                 </div>
+            @else
+                <p>すべてのタスクが完了しました。</p>
+            @endif
+
+            @if ($errors->any())
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-2" role="alert">
+                    <p>
+                        <b>{{ count($errors) }}件のエラーがあります。</b>
+                    </p>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <!-- 画面下の「タスク入力」「締め切り」「重要度」「かかる時間」「追加」ボタン -->
+            <div>
+                <form action="{{ route('tasks.store') }}" method="post">
+                    @csrf
+                    <div>
+                        <label for="task_name">タスク入力</label><br>
+                        <input type="text" name="task_name" id="task_name" required>
+                    </div>
+
+                    <div>
+                        <label for="deadline">締め切り</label><br>
+                        <input type="time" name="deadline" id="deadline" required>
+                    </div>
+
+                    <div>
+                        <label for="importance">重要度</label><br>
+                        <input type="number" name="importance" id="importance" min="1" max="5" required>
+                    </div>
+
+                    <div>
+                        <label for="estimated_time">かかる時間</label><br>
+                        <input type="time" name="estimated_time" id="estimated_time" required>
+                    </div>
+
+                    <input type="submit" value="追加">
+                </form>
+            </div>
 
     </body>
 
