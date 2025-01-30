@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id(); // タスクの一意のID
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // ユーザーID（外部キー）
-            $table->string('user_name'); // ユーザー名
             $table->string('task_name'); // タスク名
             $table->text('description')->nullable(); // タスク詳細（任意）
             $table->integer('importance')->nullable(); // 重要度（1～5などのスコア、任意）
