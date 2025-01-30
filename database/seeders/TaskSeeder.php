@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class TaskSeeder extends Seeder
@@ -14,9 +15,10 @@ class TaskSeeder extends Seeder
      */
     public function run(): void
     {
+        $user_1 = User::first();
+        $user_2 = User::latest()->first();
         DB::table('tasks')->insert([
-            'user_id' => 1,
-            'user_name' => '沖野',
+            'user_id' => $user_1->id, // 必ず指定する
             'task_name' => 'ご飯',
             'description' => 'ごはん',
             'importance' => 4,
@@ -28,8 +30,7 @@ class TaskSeeder extends Seeder
         ]);
         $param = [
             [
-                'user_id' => 1,
-                'user_name' => '沖野',
+                'user_id' => $user_1->id, // 必ず指定する   
                 'task_name' => 'めも',
                 'description' => 'たすく',
                 'importance' => 1,
@@ -37,11 +38,10 @@ class TaskSeeder extends Seeder
                 'estimated_time' => 70,
                 'priority' => 3,
                 'manual_priority' => null,
-                'status' => '未完了'            
+                'status' => '未完了'
             ],
             [
-                'user_id' => 2,
-                'user_name' => '八木下さん',
+                'user_id' => $user_2->id,
                 'task_name' => 'ご飯',
                 'description' => 'ごはん',
                 'importance' => 2,
@@ -49,9 +49,9 @@ class TaskSeeder extends Seeder
                 'estimated_time' => 8,
                 'priority' => 2,
                 'manual_priority' => null,
-                'status' => '未完了'        
+                'status' => '未完了'
             ]
         ];
-        DB::table('tasks')->insert($param);    
-    }    
+        DB::table('tasks')->insert($param);
+    }
 }
