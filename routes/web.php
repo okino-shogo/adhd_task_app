@@ -3,12 +3,16 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\GeminiController;
 
-Route::get('/', [TaskController::class, 'index'])->name('root');
+Route::get('/', [TaskController::class, 'index'])->middleware(['auth', 'verified'])->name('root');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('index', [GeminiController::class, 'index']);
+Route::post('index', [GeminiController::class, 'post']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

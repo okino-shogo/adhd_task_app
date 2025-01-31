@@ -63,11 +63,11 @@
             /* 最優先タスク */
             .top-task-container {
                 text-align: center;
-                margin: 20px 0;
+                margin: 100px 0;
             }
 
             .top-task {
-                font-size: 50px;
+                font-size: 100px;
                 font-weight: bold;
                 color: #333;
             }
@@ -159,7 +159,7 @@
                     </form>
                 </div>
             @else
-                <p style="text-align: center; font-size: 20px;">🎉 すべてのタスクが完了しました！</p>
+                <p style="text-align: center; font-size: 90px;">🎉すべてのタスクが完了しました！</p>
             @endif
 
             <!-- エラーメッセージ -->
