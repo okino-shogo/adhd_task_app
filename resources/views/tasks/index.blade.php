@@ -76,6 +76,7 @@
             .countdown_timer_area {
                 display: flex;
                 align-items: center;
+                font-size: 40px
             }
 
             .text {
@@ -196,7 +197,7 @@
         <div class="container">
             <!-- ヘッダー -->
             <div class="header">
-                <a href="{{ route('tasks.index') }}" class="btn"> 優先順位アプリ</a>
+                <a href="{{ route('tasks.index') }}" class="btn">優先順位アプリ</a>
                 <div>
                     <a href="/tasks/reorder" class="btn">優先順位を編集</a>
                 </div>
@@ -215,6 +216,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- メッセージ表示 -->
             @if (session('message'))
                 <p class="message">{{ session('message') }}</p>
@@ -258,7 +260,7 @@
                     <label for="deadline">締め切り</label>
                     <input type="time" name="deadline" id="deadline">
 
-                    <label for="importance">重要度</label>
+                    <label for="importance">重要度 (1-5)</label>
                     <input type="number" name="importance" id="importance" min="1" max="5">
 
                     <label for="estimated_time">かかる時間</label>
@@ -268,61 +270,56 @@
                 </form>
             </div>
         </div>
+
         <script>
-            // Bladeから受け取った estimated_time（"HH:MM"）を使う
-            let estimatedTimeString = "{{ $task ? $task->estimated_time : '' }}";
-            let timer_id = null;
-            let goal = null;
+            document.addEventListener("DOMContentLoaded", function() {
+                let estimatedTimeString = "{{ $task ? $task->estimated_time : '00:00' }}";
+                let timer_id = null;
+                let goal = null;
 
-            // 「取り掛かる」ボタンを押したときにタイマーを開始する処理
-            document.getElementById("startTimerBtn")?.addEventListener("click", function() {
-                if (estimatedTimeString) {
-                    // 例: "01:02" → hour=1, minute=2
-                    const [hourStr, minStr] = estimatedTimeString.split(':');
-                    const hourNum = parseInt(hourStr) || 0;
-                    const minNum = parseInt(minStr) || 0;
+                document.getElementById("startTimerBtn")?.addEventListener("click", function() {
+                    if (estimatedTimeString) {
+                        const [hourStr, minStr] = estimatedTimeString.split(':');
+                        const hourNum = parseInt(hourStr) || 0;
+                        const minNum = parseInt(minStr) || 0;
 
-                    // 現在時刻 + タスクにかかる合計ミリ秒
-                    let now = new Date();
-                    let totalMs = hourNum * 3600000 + minNum * 60000;
-                    goal = new Date(now.getTime() + totalMs);
+                        let now = new Date();
+                        let totalMs = hourNum * 3600000 + minNum * 60000;
+                        goal = new Date(now.getTime() + totalMs);
 
-                    recalc(); // タイマー開始
+                        recalc();
+                    }
+                });
+
+                function countdown(due) {
+                    const now = new Date().getTime();
+                    const rest = due - now;
+                    const clamped = Math.max(0, rest);
+
+                    const sec = Math.floor(clamped / 1000) % 60;
+                    const min = Math.floor(clamped / 1000 / 60) % 60;
+                    const hour = Math.floor(clamped / 1000 / 60 / 60);
+
+                    return [hour, min, sec];
+                }
+
+                function recalc() {
+                    if (!goal) return;
+
+                    const [hour, min, sec] = countdown(goal);
+
+                    document.querySelector('.hour').textContent = String(hour).padStart(2, '0');
+                    document.querySelector('.min').textContent = String(min).padStart(2, '0');
+                    document.querySelector('.sec').textContent = String(sec).padStart(2, '0');
+
+                    if (hour === 0 && min === 0 && sec === 0) {
+                        clearTimeout(timer_id);
+                        return;
+                    }
+
+                    timer_id = setTimeout(recalc, 1000);
                 }
             });
-
-            function countdown(due) {
-                // due(=goal)までの残り時間を計算
-                const now = new Date().getTime();
-                const rest = due - now; // 残ミリ秒
-
-                // restが負(=タイマー終了)なら0扱い
-                const clamped = (rest < 0) ? 0 : rest;
-
-                const sec = Math.floor(clamped / 1000) % 60;
-                const min = Math.floor(clamped / 1000 / 60) % 60;
-                const hour = Math.floor(clamped / 1000 / 60 / 60);
-
-                return [hour, min, sec];
-            }
-
-            function recalc() {
-                if (!goal) return; // タスクがなければ何もしない
-
-                const [hour, min, sec] = countdown(goal);
-
-                document.querySelector('.hour').textContent = String(hour).padStart(2, '0');
-                document.querySelector('.min').textContent = String(min).padStart(2, '0');
-                document.querySelector('.sec').textContent = String(sec).padStart(2, '0');
-
-                // 残りが全て0になったら停止
-                if (hour === 0 && min === 0 && sec === 0) {
-                    clearTimeout(timer_id);
-                    return;
-                }
-
-                timer_id = setTimeout(recalc, 1000); // 1秒ごとに更新
-            }
         </script>
 
 

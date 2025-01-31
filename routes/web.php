@@ -36,5 +36,7 @@ Route::post('/tasks/{task}/complete', [TaskController::class, 'complete'])->name
 
 // ドラッグ＆ドロップで並び替えて保存（POST）
 Route::post('/tasks/reorder/save', [TaskController::class, 'updateOrder'])->name('tasks.updateOrder');
+Route::put('/tasks/{id}', [TaskController::class, 'update'])->name('tasks.update');
+
 
 require __DIR__.'/auth.php';
