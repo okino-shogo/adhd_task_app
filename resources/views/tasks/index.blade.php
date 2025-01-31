@@ -8,6 +8,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
         <title>ホーム</title>
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         <style>
@@ -58,6 +59,63 @@
 
             .btn:hover {
                 background-color: #2980b9;
+            }
+
+            .timer {
+                font-weight: bold;
+                text-align: center;
+                line-height: 2;
+                display: -ms-flexbox;
+                display: flex;
+                -ms-flex-pack: center;
+                justify-content: center;
+                -ms-flex-align: center;
+                align-items: center;
+            }
+
+            .countdown_timer_area {
+                display: flex;
+                align-items: center;
+            }
+
+            .text {
+                line-height: 1;
+            }
+
+            .num {
+                font-size: 24px;
+            }
+
+            .num .hour {
+                font-family: 'Oswald', sans-serif;
+                font-size: 40px;
+                width: 40px;
+                display: inline-block;
+                padding: 0 .2em;
+            }
+
+            .num .min {
+                font-family: 'Oswald', sans-serif;
+                font-size: 40px;
+                width: 40px;
+                display: inline-block;
+                padding: 0 .2em;
+            }
+
+            .num .sec {
+                font-family: 'Oswald', sans-serif;
+                font-size: 40px;
+                width: 40px;
+                display: inline-block;
+                padding: 0 .2em;
+            }
+
+            .num .milisec {
+                font-family: 'Oswald', sans-serif;
+                font-size: 40px;
+                width: 40px;
+                display: inline-block;
+                padding: 0 .2em;
             }
 
             /* 最優先タスク */
@@ -134,16 +192,29 @@
 
     <body>
 
+
         <div class="container">
             <!-- ヘッダー -->
             <div class="header">
                 <a href="{{ route('tasks.index') }}" class="btn"> 優先順位アプリ</a>
                 <div>
-                    <button class="btn">締め切り</button>
                     <a href="/tasks/reorder" class="btn">優先順位を編集</a>
                 </div>
+                <div class="timer">
+                    <div class="countdown_timer_area">
+                        <div class="text">終了<br>まで</div>
+                        @if ($task)
+                            <span class="hour js_time_reset">{{ explode(':', $task->estimated_time)[0] }}</span>時間
+                            <span class="min js_time_reset">{{ explode(':', $task->estimated_time)[1] }}</span>分
+                            <span class="sec js_time_reset">00</span>秒
+                        @else
+                            <span class="hour js_time_reset">00</span>時間
+                            <span class="min js_time_reset">00</span>分
+                            <span class="sec js_time_reset">00</span>秒
+                        @endif
+                    </div>
+                </div>
             </div>
-
             <!-- メッセージ表示 -->
             @if (session('message'))
                 <p class="message">{{ session('message') }}</p>
@@ -153,13 +224,16 @@
             @if ($task)
                 <div class="top-task-container">
                     <p class="top-task">{{ $task->task_name }}</p>
-                    <form method="POST" action="{{ route('tasks.complete', $task->id) }}">
-                        @csrf
-                        <button type="submit" class="complete-btn">✔️ 完了</button>
-                    </form>
+                    <div class="task-buttons">
+                        <button id="startTimerBtn" class="btn">取り掛かる</button>
+                        <form method="POST" action="{{ route('tasks.complete', $task->id) }}">
+                            @csrf
+                            <button type="submit" class="complete-btn">✔ 完了</button>
+                        </form>
+                    </div>
                 </div>
             @else
-                <p style="text-align: center; font-size: 90px;">🎉すべてのタスクが完了しました！</p>
+                <p style="text-align: center; font-size: 90px;">🎉すべてのタスクが完了しました</p>
             @endif
 
             <!-- エラーメッセージ -->
@@ -194,6 +268,63 @@
                 </form>
             </div>
         </div>
+        <script>
+            // Bladeから受け取った estimated_time（"HH:MM"）を使う
+            let estimatedTimeString = "{{ $task ? $task->estimated_time : '' }}";
+            let timer_id = null;
+            let goal = null;
+
+            // 「取り掛かる」ボタンを押したときにタイマーを開始する処理
+            document.getElementById("startTimerBtn")?.addEventListener("click", function() {
+                if (estimatedTimeString) {
+                    // 例: "01:02" → hour=1, minute=2
+                    const [hourStr, minStr] = estimatedTimeString.split(':');
+                    const hourNum = parseInt(hourStr) || 0;
+                    const minNum = parseInt(minStr) || 0;
+
+                    // 現在時刻 + タスクにかかる合計ミリ秒
+                    let now = new Date();
+                    let totalMs = hourNum * 3600000 + minNum * 60000;
+                    goal = new Date(now.getTime() + totalMs);
+
+                    recalc(); // タイマー開始
+                }
+            });
+
+            function countdown(due) {
+                // due(=goal)までの残り時間を計算
+                const now = new Date().getTime();
+                const rest = due - now; // 残ミリ秒
+
+                // restが負(=タイマー終了)なら0扱い
+                const clamped = (rest < 0) ? 0 : rest;
+
+                const sec = Math.floor(clamped / 1000) % 60;
+                const min = Math.floor(clamped / 1000 / 60) % 60;
+                const hour = Math.floor(clamped / 1000 / 60 / 60);
+
+                return [hour, min, sec];
+            }
+
+            function recalc() {
+                if (!goal) return; // タスクがなければ何もしない
+
+                const [hour, min, sec] = countdown(goal);
+
+                document.querySelector('.hour').textContent = String(hour).padStart(2, '0');
+                document.querySelector('.min').textContent = String(min).padStart(2, '0');
+                document.querySelector('.sec').textContent = String(sec).padStart(2, '0');
+
+                // 残りが全て0になったら停止
+                if (hour === 0 && min === 0 && sec === 0) {
+                    clearTimeout(timer_id);
+                    return;
+                }
+
+                timer_id = setTimeout(recalc, 1000); // 1秒ごとに更新
+            }
+        </script>
+
 
     </body>
 
