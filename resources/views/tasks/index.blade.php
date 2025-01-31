@@ -204,9 +204,19 @@
                 <div class="timer">
                     <div class="countdown_timer_area">
                         <div class="text">終了<br>まで</div>
-                        @if ($task)
-                            <span class="hour js_time_reset">{{ explode(':', $task->estimated_time)[0] }}</span>時間
-                            <span class="min js_time_reset">{{ explode(':', $task->estimated_time)[1] }}</span>分
+                        @php
+                            $isValidTime =
+                                $task && !empty($task->estimated_time) && strpos($task->estimated_time, ':') !== false;
+                        @endphp
+
+                        @if ($isValidTime)
+                            @php
+                                $timeParts = explode(':', $task->estimated_time);
+                                $hours = isset($timeParts[0]) ? $timeParts[0] : '00';
+                                $minutes = isset($timeParts[1]) ? $timeParts[1] : '00';
+                            @endphp
+                            <span class="hour js_time_reset">{{ $hours }}</span>時間
+                            <span class="min js_time_reset">{{ $minutes }}</span>分
                             <span class="sec js_time_reset">00</span>秒
                         @else
                             <span class="hour js_time_reset">00</span>時間
@@ -277,41 +287,44 @@
                 let timer_id = null;
                 let goal = null;
 
+                // Bladeから受け取った estimated_time（"HH:MM"）を使う
+                let estimatedTimeString = "{{ $task ? $task->estimated_time : '' }}";
+                let timer_id = null;
+                let goal = null;
+                // 「取り掛かる」ボタンを押したときにタイマーを開始する処理
                 document.getElementById("startTimerBtn")?.addEventListener("click", function() {
                     if (estimatedTimeString) {
+                        // 例: "01:02" → hour=1, minute=2
                         const [hourStr, minStr] = estimatedTimeString.split(':');
                         const hourNum = parseInt(hourStr) || 0;
                         const minNum = parseInt(minStr) || 0;
-
+                        // 現在時刻 + タスクにかかる合計ミリ秒
                         let now = new Date();
                         let totalMs = hourNum * 3600000 + minNum * 60000;
                         goal = new Date(now.getTime() + totalMs);
-
-                        recalc();
+                        recalc(); // タイマー開始
                     }
+
                 });
 
                 function countdown(due) {
+                    // due(=goal)までの残り時間を計算
                     const now = new Date().getTime();
-                    const rest = due - now;
-                    const clamped = Math.max(0, rest);
-
+                    const rest = due - now; // 残ミリ秒
+                    // restが負(=タイマー終了)なら0扱い
+                    const clamped = (rest < 0) ? 0 : rest;
                     const sec = Math.floor(clamped / 1000) % 60;
                     const min = Math.floor(clamped / 1000 / 60) % 60;
                     const hour = Math.floor(clamped / 1000 / 60 / 60);
-
                     return [hour, min, sec];
                 }
 
                 function recalc() {
-                    if (!goal) return;
-
+                    if (!goal) return; // タスクがなければ何もしない
                     const [hour, min, sec] = countdown(goal);
-
                     document.querySelector('.hour').textContent = String(hour).padStart(2, '0');
                     document.querySelector('.min').textContent = String(min).padStart(2, '0');
                     document.querySelector('.sec').textContent = String(sec).padStart(2, '0');
-
                     if (hour === 0 && min === 0 && sec === 0) {
                         clearTimeout(timer_id);
                         return;
