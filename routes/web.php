@@ -12,7 +12,8 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('index', [GeminiController::class, 'index']);
-Route::post('index', [GeminiController::class, 'post']);
+Route::post('index', [GeminiController::class, 'post'])->name('tasks.store');
+Route::post('/gemini/post', [GeminiController::class, 'post'])->name('gemini.post');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

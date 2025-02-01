@@ -231,7 +231,6 @@
             @if (session('message'))
                 <p class="message">{{ session('message') }}</p>
             @endif
-
             <!-- 最優先タスク表示 -->
             @if ($task)
                 <div class="top-task-container">
@@ -262,16 +261,16 @@
 
             <!-- タスク追加フォーム -->
             <div class="task-form">
-                <form action="{{ route('tasks.store') }}" method="post">
+                <form action="{{ route('gemini.post') }}" method="post">
                     @csrf
                     <label for="task_name">タスク入力</label>
                     <input type="text" name="task_name" id="task_name" required>
 
                     <label for="deadline">締め切り</label>
-                    <input type="time" name="deadline" id="deadline">
+                    <input type="time" name="deadline" id="deadline" >
 
                     <label for="importance">重要度 (1-5)</label>
-                    <input type="number" name="importance" id="importance" min="1" max="5">
+                    <input type="number" name="importance" id="importance" min="1" max="5"value="1">
 
                     <label for="estimated_time">かかる時間</label>
                     <input type="time" name="estimated_time" id="estimated_time">

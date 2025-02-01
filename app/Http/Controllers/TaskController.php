@@ -72,7 +72,7 @@ class TaskController extends Controller
     {
         $task = Task::find($task);
         $task->delete();
-        return redirect(route('tasks.index'));
+        return redirect(route('tasks.reorder'));
     }
 
 
